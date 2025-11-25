@@ -1,4 +1,5 @@
-﻿using ProyectoTecWeb.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using ProyectoTecWeb.Data;
 using ProyectoTecWeb.Models;
 
 namespace ProyectoTecWeb.Repositories
@@ -17,24 +18,26 @@ namespace ProyectoTecWeb.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public Task Delete(Song song)
+        public async Task Delete(Song song)
         {
-            throw new NotImplementedException();
+            _db.Songs.Remove(song);
+            await _db.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Song>> GetAll()
+        public async Task<IEnumerable<Song>> GetAll()
         {
-            throw new NotImplementedException();
+             return await _db.Songs.ToListAsync();
         }
 
-        public Task<Song> GetOne(Guid id)
+        public async Task<Song?> GetOne(Guid id)
         {
-            throw new NotImplementedException();
+            return await _db.Songs.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Task Update(Song song)
+        public async Task Update(Song song)
         {
-            throw new NotImplementedException();
+            _db.Songs.Update(song);
+            await _db.SaveChangesAsync();
         }
     }
 }
