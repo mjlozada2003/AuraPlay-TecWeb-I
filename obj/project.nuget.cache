@@ -1,11 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "nFLwGuPgmSM=",
+  "dgSpecHash": "HayzPww6EUM=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Maria\\U\\2-2025\\Tec Web I\\ProyectoTecWeb\\ProyectoTecWeb\\ProyectoTecWeb.csproj",
+  "projectFilePath": "C:\\Universidad\\6to Semetre\\TecWeb1\\RelationsG7\\ProyectoTecWeb.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Maria\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.8\\microsoft.aspnetcore.openapi.9.0.8.nupkg.sha512",
-    "C:\\Users\\Maria\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+    "C:\\Users\\adria\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.8\\microsoft.aspnetcore.openapi.9.0.8.nupkg.sha512",
+    "C:\\Users\\adria\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512",
+    "C:\\Users\\adria\\.nuget\\packages\\microsoft.net.sdk.compilers.toolset\\9.0.304\\microsoft.net.sdk.compilers.toolset.9.0.304.nupkg.sha512"
   ],
   "logs": []
 }
