@@ -15,6 +15,7 @@ namespace ProyectoTecWeb.Models
         [Required, Range(0,60)]
         public float duration { get; set; }
 
+        public Statistics? Statistics { get; set; }
 
     }
 }

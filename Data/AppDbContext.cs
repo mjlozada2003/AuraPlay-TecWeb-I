@@ -11,7 +11,7 @@ namespace ProyectoTecWeb.Data
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Song> Songs => Set<Song>();
-        public DbSet<Stadistics> Stadistics => Set<Stadistics>();
+        public DbSet<Statistics> Stadistics => Set<Statistics>();
         public DbSet<Playlist> Playlists => Set<Playlist>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,7 +22,7 @@ namespace ProyectoTecWeb.Data
             modelBuilder.Entity<Song>()
                 .HasOne(s => s.Stadistics)
                 .WithOne(st => st.Song)
-                .HasForeignKey<Stadistics>(st => st.SongId)
+                .HasForeignKey<Statistics>(st => st.SongId)
                 .OnDelete(DeleteBehavior.Cascade); 
 
             // Relación 1:N (User - Playlist)

@@ -1,6 +1,6 @@
 ﻿namespace ProyectoTecWeb.Models
 {
-    public class Stadistics
+    public class Statistics
     {
         public Guid Id { get; set; }
         public int Reproductions { get; set; }
