@@ -3,10 +3,10 @@ services:
     build: .
     container_name: music_api
     ports:
-      - "8080:8080" # Mapea puerto 8080 del host al contenedor
+      - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      # Pasa las variables definidas en el .env
+      # variables definidas en el .env
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
