@@ -19,7 +19,16 @@ namespace ProyectoTecWeb.Services
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
                 Description = dto.Description,
-                duration = dto.duration
+                duration = dto.duration,
+                // Inicializamos estadísticas en 0 automáticamente
+                Statistics = new Statistics
+                {
+                    Id = Guid.NewGuid(),
+                    Downloads = 0,
+                    Likes = 0,
+                    Rating = 0,
+                    Reproductions = 0
+                }
             };
             await _repo.Add(song);
             return song;
@@ -48,6 +57,20 @@ namespace ProyectoTecWeb.Services
             song.Name = dto.Name;
             song.Description = dto.Description; 
             song.duration = dto.duration;
+
+            await _repo.Update(song);
+            return song;
+        }
+
+        public async Task<Song> UpdateStats(Guid songId, UpdateStatsDto dto)
+        {
+            var song = await _repo.GetOne(songId);
+            if (song == null) throw new Exception("Song not found");
+
+            // Como incluimos stats en el repo, podemos editarlas directamente
+            song.Statistics.Likes = dto.Likes;
+            song.Statistics.Reproductions = dto.Reproductions;
+            song.Statistics.Rating = dto.Rating;
 
             await _repo.Update(song);
             return song;

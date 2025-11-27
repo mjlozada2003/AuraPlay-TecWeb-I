@@ -26,12 +26,15 @@ namespace ProyectoTecWeb.Repositories
 
         public async Task<IEnumerable<Song>> GetAll()
         {
-             return await _db.Songs.ToListAsync();
+             return await _db.Songs.Include(s => s.Statistics).ToListAsync();
         }
 
         public async Task<Song?> GetOne(Guid id)
         {
-            return await _db.Songs.FirstOrDefaultAsync(x => x.Id == id);
+            return await _db.Songs
+                .Include(s => s.Statistics) //  1:1
+                .Include(s => s.Playlists) // N:M
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task Update(Song song)

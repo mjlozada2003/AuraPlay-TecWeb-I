@@ -52,6 +52,18 @@ namespace ProyectoTecWeb.Controllers
             await _service.DeleteSong(id);
             return NoContent();
         }
+
+        [HttpPut("{id}/stats")]
+        [Authorize]
+        public async Task<IActionResult> UpdateStats(Guid id, [FromBody] UpdateStatsDto dto)
+        {
+            try
+            {
+                var song = await _service.UpdateStats(id, dto);
+                return Ok(song);
+            }
+            catch (Exception e) { return BadRequest(e.Message); }
+        }
     }
     
 }

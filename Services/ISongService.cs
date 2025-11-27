@@ -10,5 +10,6 @@ namespace ProyectoTecWeb.Services
         Task<Song> CreateSong(CreateSongDto dto);
         Task<Song> UpdateSong(UpdateSongDto dto, Guid id);
         Task DeleteSong(Guid id);
+        Task<Song> UpdateStats(Guid songId, UpdateStatsDto dto);
     }
 }
