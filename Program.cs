@@ -1,23 +1,149 @@
+using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models; // Necesario para Swagger con JWT
+using Npgsql;
+using ProyectoTecWeb.Data;
+using ProyectoTecWeb.Repositories;
+using ProyectoTecWeb.Services;
+using System.Security.Claims;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 1. Cargar variables de entorno (.env) si estamos en local
+Env.Load();
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+// 2. Servicios Base
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+
+// Configuración de Swagger para aceptar el Token JWT en la interfaz
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Music API", Version = "v1" });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+// 3. CORS (Permitir todo para desarrollo/pruebas)
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("AllowAll", p => p
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+        .AllowAnyMethod());
+});
+
+// 4. Configuración de Base de Datos (Lógica Railway/Docker)
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+if (!string.IsNullOrEmpty(connectionString) &&
+   (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
+{
+    // Parseo manual de la URL de Railway para Npgsql
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':', 2);
+    var user = Uri.UnescapeDataString(userInfo[0]);
+    var pass = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+
+    var builderCs = new NpgsqlConnectionStringBuilder
+    {
+        Host = uri.Host,
+        Port = uri.Port,
+        Username = user,
+        Password = pass,
+        Database = uri.AbsolutePath.Trim('/'),
+        SslMode = SslMode.Disable, // A veces Railway requiere Disable o Require según la red interna
+        TrustServerCertificate = true
+    };
+    connectionString = builderCs.ConnectionString;
+}
+else
+{
+    // Fallback para desarrollo local con docker-compose
+    var dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "musicdb";
+    var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "musicuser";
+    var dbPass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "supersecret";
+    var dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost"; // Ojo: en docker-compose usar nombre del servicio "db"
+
+    connectionString = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
+}
+
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connectionString));
+
+// 5. Configuración JWT
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "ClaveSecretaSuperSeguraParaDesarrollo123!";
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "MiApi";
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "MiCliente";
+var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            RoleClaimType = ClaimTypes.Role,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+// 6. Políticas de Autorización
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+});
+
+// 7. Inyección de Dependencias (Repositorios y Servicios)
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+// NUEVOS SERVICIOS DE MÚSICA
+builder.Services.AddScoped<ISongRepository, SongRepository>();
+builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline de Peticiones
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
-
+app.UseCors("AllowAll");
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

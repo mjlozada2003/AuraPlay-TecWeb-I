@@ -20,7 +20,7 @@ namespace ProyectoTecWeb.Data
 
             // Relación 1:1 (Song - Statistics)
             modelBuilder.Entity<Song>()
-                .HasOne(s => s.Stadistics)
+                .HasOne(s => s.Statistics)
                 .WithOne(st => st.Song)
                 .HasForeignKey<Statistics>(st => st.SongId)
                 .OnDelete(DeleteBehavior.Cascade); 
