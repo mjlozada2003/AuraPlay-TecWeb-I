@@ -2,7 +2,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models; // Necesario para Swagger con JWT
+using Microsoft.OpenApi.Models; 
 using Npgsql;
 using ProyectoTecWeb.Data;
 using ProyectoTecWeb.Repositories;
@@ -12,17 +12,15 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Cargar variables de entorno (.env) si estamos en local
 Env.Load();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// 2. Servicios Base
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Configuración de Swagger para aceptar el Token JWT en la interfaz
+// Configuración de Swagger 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Music API", Version = "v1" });
@@ -46,7 +44,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 3. CORS (Permitir todo para desarrollo/pruebas)
+// 3. CORS 
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("AllowAll", p => p
@@ -55,13 +53,12 @@ builder.Services.AddCors(opt =>
         .AllowAnyMethod());
 });
 
-// 4. Configuración de Base de Datos (Lógica Railway/Docker)
+// 4. Lógica Railway/Docker
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 
 if (!string.IsNullOrEmpty(connectionString) &&
    (connectionString.StartsWith("postgres://") || connectionString.StartsWith("postgresql://")))
 {
-    // Parseo manual de la URL de Railway para Npgsql
     var uri = new Uri(connectionString);
     var userInfo = uri.UserInfo.Split(':', 2);
     var user = Uri.UnescapeDataString(userInfo[0]);
@@ -74,18 +71,18 @@ if (!string.IsNullOrEmpty(connectionString) &&
         Username = user,
         Password = pass,
         Database = uri.AbsolutePath.Trim('/'),
-        SslMode = SslMode.Disable, // A veces Railway requiere Disable o Require según la red interna
+        SslMode = SslMode.Disable, 
         TrustServerCertificate = true
     };
     connectionString = builderCs.ConnectionString;
 }
 else
 {
-    // Fallback para desarrollo local con docker-compose
+    //para desarrollo local con docker-compose
     var dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "musicdb";
     var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "musicuser";
     var dbPass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "supersecret";
-    var dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost"; // Ojo: en docker-compose usar nombre del servicio "db"
+    var dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
 
     connectionString = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
 }
@@ -126,7 +123,6 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// NUEVOS SERVICIOS DE MÚSICA
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<ISongService, SongService>();
