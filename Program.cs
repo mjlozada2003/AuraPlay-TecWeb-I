@@ -2,7 +2,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models; 
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using ProyectoTecWeb.Data;
 using ProyectoTecWeb.Repositories;
@@ -71,8 +71,8 @@ if (!string.IsNullOrEmpty(connectionString) &&
         Username = user,
         Password = pass,
         Database = uri.AbsolutePath.Trim('/'),
-        SslMode = SslMode.Disable, 
-        TrustServerCertificate = true
+        SslMode = SslMode.Disable
+        // TrustServerCertificate = true  
     };
     connectionString = builderCs.ConnectionString;
 }
@@ -120,8 +120,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 // 7. Inyección de Dependencias (Repositorios y Servicios)
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+// builder.Services.AddScoped<IUserRepository, UserRepository>(); 
+// builder.Services.AddScoped<IAuthService, AuthService>();      
 
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();

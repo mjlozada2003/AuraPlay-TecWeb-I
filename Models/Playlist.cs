@@ -1,22 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProyectoTecWeb.Models
 {
-    public class Song
+    public class Playlist
     {
         public Guid Id { get; set; }
 
         [Required, StringLength(100)]
         public string Name { get; set; } = string.Empty;
 
-        [Required, StringLength(100)]
+        [StringLength(200)]
         public string Description { get; set; } = string.Empty;
 
-        [Required, Range(0,60)]
-        public float duration { get; set; }
-
-        public Statistics? Statistics { get; set; }
-
+        // Relación M:N con Cancion a través de la tabla intermedia
         public ICollection<PlaylistSong> PlaylistSongs { get; set; } = new List<PlaylistSong>();
     }
 }
