@@ -1,0 +1,22 @@
+# Etapa 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copiar el csproj y restaurar dependencias
+COPY ["ProyectoTecWeb.csproj", "./"]
+RUN dotnet restore "./ProyectoTecWeb.csproj"
+
+# Copiar todo el código fuente y compilar
+COPY . .
+RUN dotnet publish "ProyectoTecWeb.csproj" -c Release -o /app/publish
+
+# Etapa 2: Runtime (Imagen más ligera para producción)
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+EXPOSE 8080
+
+# Copiar los archivos compilados desde la etapa anterior
+COPY --from=build /app/publish .
+
+# Ejecutar la aplicación
+ENTRYPOINT ["dotnet", "ProyectoTecWeb.dll"]
