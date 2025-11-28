@@ -12,13 +12,14 @@ namespace ProyectoTecWeb.Services
             _repo = repo;
         }
 
-        public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto)
+        public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
         {
             var playlist = new Playlist
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
-                Description = dto.Description
+                Description = dto.Description,
+                UserId = userId
             };
             await _repo.Add(playlist);
             return playlist;

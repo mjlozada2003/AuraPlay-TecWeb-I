@@ -19,5 +19,8 @@ namespace ProyectoTecWeb.Models
         public DateTime? RefreshTokenExpiresAt { get; set; }
         public DateTime? RefreshTokenRevokedAt { get; set; }
         public string? CurrentJwtId { get; set; }
+
+        // RELACIÓN 1:N (Un usuario tiene muchas playlists)
+        public ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
     }
 }

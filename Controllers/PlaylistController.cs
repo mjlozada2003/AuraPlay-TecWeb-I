@@ -31,13 +31,21 @@ namespace ProyectoTecWeb.Controllers
             var playlist = await _service.GetOne(id);
             return Ok(playlist);
         }
-
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreatePlaylist([FromBody] CreatePlaylistDto dto)
         {
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
-            var playlist = await _service.CreatePlaylist(dto);
+
+            // ✅ EXTRAER ID DEL TOKEN
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst("sub")?.Value;
+
+            if (userIdClaim == null) return Unauthorized();
+
+            // Pasamos el ID al servicio
+            var playlist = await _service.CreatePlaylist(dto, Guid.Parse(userIdClaim));
+
             return CreatedAtAction(nameof(GetOne), new { id = playlist.Id }, playlist);
         }
 

@@ -18,7 +18,6 @@ namespace ProyectoTecWeb.Models
         public Statistics? Statistics { get; set; }
 
         public ICollection<PlaylistSong> PlaylistSongs { get; set; } = new List<PlaylistSong>();
-        public Guid StatisticsId { get; set; }
-        public Statistics statistics { get; set; }
+
     }
 }
