@@ -1,13 +1,12 @@
-ï»¿using DotNetEnv;
+using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models; // ? Correcto
+using Microsoft.OpenApi.Models;
 using Npgsql;
 using ProyectoTecWeb.Data;
-using ProyectoTecWeb.Repositories;
-using ProyectoTecWeb.Services;
+using ProyectoTecWeb.Repositories; 
+using ProyectoTecWeb.Services;     
 using System.Security.Claims;
 using System.Text;
 
@@ -16,7 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Carga variables de entorno
 Env.Load();
 
-// 2. ConfiguraciÃ³n de puerto (Railway/Docker/local)
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
@@ -26,26 +24,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Music API", Version = "v1" });
-
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header. Ejemplo: 'Bearer 12345abcdef'",
+        Description = "JWT Authorization header using the Bearer scheme (Example: 'Bearer 12345abcdef')",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
             },
             Array.Empty<string>()
         }
@@ -65,6 +57,7 @@ builder.Services.AddCors(opt =>
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (!string.IsNullOrEmpty(connectionString))
 {
+    // Lógica para Railway (DATABASE_URL)
     var uri = new Uri(connectionString);
     var userInfo = uri.UserInfo.Split(':', 2);
     var user = Uri.UnescapeDataString(userInfo[0]);
@@ -76,24 +69,22 @@ if (!string.IsNullOrEmpty(connectionString))
         Username = user,
         Password = pass,
         Database = uri.AbsolutePath.Trim('/'),
-        SslMode = SslMode.Disable
+        SslMode = SslMode.Disable // Cambiar a Require si Railway lo exige en producción
     };
     connectionString = builderCs.ConnectionString;
 }
 else
 {
+    // Lógica Local (Docker variables)
     var dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "musicdb";
     var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "musicuser";
     var dbPass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "supersecret";
     var dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
 
-var jwtIssuer = builder.Configuration["Jwt:Issuer"]
-    ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
-    ?? "MusicApi";
+    connectionString = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
+}
 
-var jwtAudience = builder.Configuration["Jwt:Audience"]
-    ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
-    ?? "MusicClient";
+builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connectionString));
 
 // Configuración JWT
 var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "ClaveSecretaSuperSeguraParaDesarrollo123!";
@@ -101,7 +92,8 @@ var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "MiApi";
 var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "MiCliente";
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(o =>
     {
         o.TokenValidationParameters = new TokenValidationParameters
@@ -121,20 +113,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Políticas
 builder.Services.AddAuthorization(options =>
 {
-    opt.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
 });
 
-// Inyección de Dependencias
+// --- INYECCIÓN DE DEPENDENCIAS ---
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();       
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
-
 builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 
-// 10. Build
 var app = builder.Build();
 
-// Pipeline
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -144,7 +136,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
