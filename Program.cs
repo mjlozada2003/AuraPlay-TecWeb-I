@@ -15,7 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Cargar variables de entorno (.env)
 Env.Load();
 
-// 2. Configuración de puerto (Railway/Docker/local)
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
