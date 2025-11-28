@@ -10,7 +10,7 @@
 
         // Clave foránea y navegación
         public Guid SongId { get; set; }
-        public Song Song { get; set; }
+        public Song Song { get; set; } = null!;
         
     }
 

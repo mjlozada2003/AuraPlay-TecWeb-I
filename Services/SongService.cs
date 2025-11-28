@@ -13,16 +13,15 @@ namespace ProyectoTecWeb.Services
             _repo = repo;
             _logger = logger;
         }
+
         public async Task<Song> CreateSong(CreateSongDto dto)
         {
-            _logger.LogInformation("🎤 Creando nueva canción: {Name}", dto.Name);
             var song = new Song
             {
                 Id = Guid.NewGuid(),
                 Name = dto.Name,
                 Description = dto.Description,
                 duration = dto.duration,
-                // Inicializamos estadísticas en 0 automáticamente
                 Statistics = new Statistics
                 {
                     Id = Guid.NewGuid(),
@@ -46,7 +45,7 @@ namespace ProyectoTecWeb.Services
             return await _repo.GetAll();
         }
 
-        public async Task<Song> GetOne(Guid id)
+        public async Task<Song?> GetOne(Guid id)
         {
             return await _repo.GetOne(id);
         }
@@ -57,7 +56,7 @@ namespace ProyectoTecWeb.Services
             if (song == null) throw new Exception("Song doesnt exist.");
 
             song.Name = dto.Name;
-            song.Description = dto.Description; 
+            song.Description = dto.Description;
             song.duration = dto.duration;
 
             await _repo.Update(song);

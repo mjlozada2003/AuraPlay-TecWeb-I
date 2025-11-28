@@ -33,7 +33,7 @@ namespace ProyectoTecWeb.Repositories
         {
             return await _db.Songs
                 .Include(s => s.Statistics) //  1:1
-                .Include(s => s.Playlists) // N:M
+                .Include(s => s.PlaylistSongs) // N:M
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
