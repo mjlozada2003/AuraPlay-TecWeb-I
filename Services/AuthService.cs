@@ -33,7 +33,7 @@ namespace ProyectoTecWeb.Services
                 return (false, null);
             }
 
-            var ok = BCrypt.Net.BCrypt.Verify(dto.PasswordHash, user.PasswordHash);
+            var ok = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
             if (!ok)
             {
                 _logger.LogWarning("⚠️ Intento de login fallido: Contraseña incorrecta para ({Email})", dto.Email);
