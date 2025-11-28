@@ -14,10 +14,13 @@ namespace ProyectoTecWeb.Models
 
         [Required]
         public string PasswordHash { get; set; }
-        public string Role { get; set; } = "User";//"User" | "Admin"
+
+        public string Role { get; set; } = "User";
+
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiresAt { get; set; }
         public DateTime? RefreshTokenRevokedAt { get; set; }
         public string? CurrentJwtId { get; set; }
+        public ICollection<Playlist> Playlists { get; set; } = new List<Playlist>();
     }
 }

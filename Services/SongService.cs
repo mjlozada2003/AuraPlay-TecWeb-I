@@ -68,7 +68,7 @@ namespace ProyectoTecWeb.Services
             var song = await _repo.GetOne(songId);
             if (song == null)
             {
-                _logger.LogError("❌ Error al actualizar stats: Canción {Id} no existe", songId);
+                _logger.LogError(" Error al actualizar stats: Canción {Id} no existe", songId);
                 throw new Exception("Song not found");
             }
             // Como incluimos stats en el repo, podemos editarlas directamente
@@ -77,7 +77,7 @@ namespace ProyectoTecWeb.Services
             song.Statistics.Rating = dto.Rating;
 
             await _repo.Update(song);
-            _logger.LogInformation("✅ Stats actualizadas para canción {Id}", songId);
+            _logger.LogInformation(" Stats actualizadas para canción {Id}", songId);
             return song;
         }
     }
