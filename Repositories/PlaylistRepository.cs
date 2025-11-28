@@ -21,16 +21,21 @@ namespace ProyectoTecWeb.Repositories
         public async Task AddSongToPlaylist(Guid playlistId, Guid songId)
         {
             var exists = await _db.PlaylistSongs
-                 .AnyAsync(ps => ps.PlaylistId == playlistSong.PlaylistId
-                     && ps.SongId == playlistSong.SongId);
+                .AnyAsync(ps => ps.PlaylistId == playlistId && ps.SongId == songId);
 
-            if (exists) return;
+            if (exists)
+                return;
+
+            var playlistSong = new PlaylistSong
+            {
+                PlaylistId = playlistId,
+                SongId = songId,
+                AddedAt = DateTime.UtcNow // si tu modelo lo tiene
+            };
 
             await _db.PlaylistSongs.AddAsync(playlistSong);
             await _db.SaveChangesAsync();
         }
-
-
 
         public async Task Delete(Playlist playlist)
         {
@@ -41,16 +46,23 @@ namespace ProyectoTecWeb.Repositories
         public async Task<IEnumerable<Playlist>> GetAll()
         {
             return await _db.Playlists
-                .Include(p => p.PlaylistSongs)  //  Songs -> PlaylistSongs
-                    .ThenInclude(ps => ps.Song) //  Incluir la canción relacionada
+                .Include(p => p.PlaylistSongs)
+                    .ThenInclude(ps => ps.Song)
                 .ToListAsync();
+        }
+
+        public async Task<Playlist?> GetOne(Guid id)
+        {
+            return await _db.Playlists
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<Playlist?> GetOneWithSongs(Guid id)
         {
             return await _db.Playlists
-                .Include(p => p.PlaylistSongs) 
-                    .ThenInclude(ps => ps.Song) 
+                .Include(p => p.User)
+                .Include(p => p.PlaylistSongs)
+                    .ThenInclude(ps => ps.Song)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
