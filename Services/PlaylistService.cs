@@ -10,15 +10,18 @@ public class PlaylistService : IPlaylistService
         _repo = repo;
     }
 
-    public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
-    {
-        var playlist = new Playlist
+        public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
         {
-            Id = Guid.NewGuid(),
-            Name = dto.Name,
-            Description = dto.Description,
-            UserId = userId          
-        };
+            var playlist = new Playlist
+            {
+                Id = Guid.NewGuid(),
+                Name = dto.Name,
+                Description = dto.Description,
+                UserId = userId
+            };
+            await _repo.Add(playlist);
+            return playlist;
+        }
 
         await _repo.Add(playlist);
         return playlist;

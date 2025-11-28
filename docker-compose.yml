@@ -1,21 +1,40 @@
 services:
+  api:
+    build: .
+    container_name: music_api
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Pasa las variables del .env al contenedor
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=db  # Importante: debe coincidir con el nombre del servicio de abajo
+      - JWT_KEY=${JWT_KEY}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - JWT_AUDIENCE=${JWT_AUDIENCE}
+    depends_on:
+      db:
+        condition: service_healthy
+
   db:
     image: postgres:16
-    container_name: security_pg
+    container_name: music_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: musicdb
-      POSTGRES_USER: musicuser
-      POSTGRES_PASSWORD: supersecretpassword123
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
-      - security_data:/var/lib/postgresql/data
+      - music_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U musicuser -d musicdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 3s
       retries: 10
 
 volumes:
-  security_data:
+  music_data:
