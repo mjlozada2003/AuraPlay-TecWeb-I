@@ -7,13 +7,15 @@ namespace ProyectoTecWeb.Services
     public class SongService : ISongService
     {
         private readonly ISongRepository _repo;
-        public SongService(ISongRepository repo)
+        private readonly ILogger<SongService> _logger;
+        public SongService(ISongRepository repo, ILogger<SongService> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
         public async Task<Song> CreateSong(CreateSongDto dto)
         {
-
+            _logger.LogInformation("🎤 Creando nueva canción: {Name}", dto.Name);
             var song = new Song
             {
                 Id = Guid.NewGuid(),
@@ -65,14 +67,18 @@ namespace ProyectoTecWeb.Services
         public async Task<Song> UpdateStats(Guid songId, UpdateStatsDto dto)
         {
             var song = await _repo.GetOne(songId);
-            if (song == null) throw new Exception("Song not found");
-
+            if (song == null)
+            {
+                _logger.LogError("❌ Error al actualizar stats: Canción {Id} no existe", songId);
+                throw new Exception("Song not found");
+            }
             // Como incluimos stats en el repo, podemos editarlas directamente
             song.Statistics.Likes = dto.Likes;
             song.Statistics.Reproductions = dto.Reproductions;
             song.Statistics.Rating = dto.Rating;
 
             await _repo.Update(song);
+            _logger.LogInformation("✅ Stats actualizadas para canción {Id}", songId);
             return song;
         }
     }
