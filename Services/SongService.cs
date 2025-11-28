@@ -35,9 +35,11 @@ namespace ProyectoTecWeb.Services
             return song;
         }
 
-        public Task DeleteSong(Guid id)
+        public async Task DeleteSong(Guid id)
         {
-            throw new NotImplementedException();
+            Song? song = (await GetAll()).FirstOrDefault(h => h.Id == id);
+            if (song == null) return;
+            await _repo.Delete(song);
         }
 
         public async Task<IEnumerable<Song>> GetAll()
