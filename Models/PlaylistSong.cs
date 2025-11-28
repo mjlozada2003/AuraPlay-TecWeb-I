@@ -1,8 +1,11 @@
-﻿namespace ProyectoTecWeb.Models
+﻿using System.Text.Json.Serialization;
+
+namespace ProyectoTecWeb.Models
 {
     public class PlaylistSong
     {
         public Guid PlaylistId { get; set; }
+        [JsonIgnore]
         public Playlist Playlist { get; set; } = null!;
 
         public Guid SongId { get; set; }

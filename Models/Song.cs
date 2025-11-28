@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace ProyectoTecWeb.Models
 {
@@ -16,6 +17,7 @@ namespace ProyectoTecWeb.Models
         public float duration { get; set; }
 
         public Statistics? Statistics { get; set; } = null;
+        [JsonIgnore]
         public ICollection<PlaylistSong> PlaylistSongs { get; set; } = new List<PlaylistSong>();
    }
 }

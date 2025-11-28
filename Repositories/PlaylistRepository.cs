@@ -18,11 +18,25 @@ namespace ProyectoTecWeb.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task AddSongToPlaylist(PlaylistSong playlistSong)
+
+        public async Task AddSongToPlaylist(Guid playlistId, Guid songId)
         {
+            bool exists = await _db.PlaylistSongs
+                .AnyAsync(ps => ps.PlaylistId == playlistId && ps.SongId == songId);
+
+            if (exists)
+                return;
+
+            var playlistSong = new PlaylistSong
+            {
+                PlaylistId = playlistId,
+                SongId = songId
+            };
+
             await _db.PlaylistSongs.AddAsync(playlistSong);
             await _db.SaveChangesAsync();
         }
+
 
         public async Task Delete(Playlist playlist)
         {

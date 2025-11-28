@@ -58,18 +58,18 @@ public class PlaylistService : IPlaylistService
         await _repo.Update(playlist);
         return playlist;
     }
-
-    public async Task AddSongToPlaylist(Guid playlistId, AddSongToPlaylistDto dto)
+    public async Task AddSongsToPlaylist(Guid playlistId, IEnumerable<Guid> songIds)
     {
-        var playlistSong = new PlaylistSong
+        var playlist = await _repo.GetOne(playlistId);
+        if (playlist == null)
+            throw new Exception("Playlist not found");
+
+        foreach (var songId in songIds)
         {
-            PlaylistId = playlistId,
-            SongId = dto.SongId,
-            AddedAt = DateTime.UtcNow
-            
-        };
-        await _repo.AddSongToPlaylist(playlistSong);
+            await _repo.AddSongToPlaylist(playlistId, songId);
+        }
     }
+
 
     public async Task RemoveSongFromPlaylist(Guid playlistId, Guid songId)
     {
