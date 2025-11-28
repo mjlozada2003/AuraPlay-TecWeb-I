@@ -68,13 +68,16 @@ namespace ProyectoTecWeb.Controllers
             return NoContent();
         }
 
-        [HttpPost("{id:guid}/songs")]
+        [HttpPost("{id}/songs")]
         [Authorize]
-        public async Task<IActionResult> AddSongToPlaylist(Guid id, [FromBody] AddSongToPlaylistDto dto)
+        public async Task<IActionResult> AddSongsToPlaylist(Guid id, [FromBody] AddSongToPlaylistDto dto)
         {
-            if (!ModelState.IsValid) return ValidationProblem(ModelState);
-            await _service.AddSongToPlaylist(id, dto);
-            return Ok(new { message = "Song added to playlist successfully" });
+            if (dto == null || dto.Songs == null || !dto.Songs.Any())
+                return BadRequest("Debe enviar al menos un id de canción.");
+
+            await _service.AddSongsToPlaylist(id, dto.Songs);
+
+            return NoContent(); // o Ok(...)
         }
 
         [HttpDelete("{playlistId:guid}/songs/{songId:guid}")]

@@ -18,7 +18,8 @@ namespace ProyectoTecWeb.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task AddSongToPlaylist(PlaylistSong playlistSong)
+
+        public async Task AddSongToPlaylist(Guid playlistId, Guid songId)
         {
             var exists = await _db.PlaylistSongs
                  .AnyAsync(ps => ps.PlaylistId == playlistSong.PlaylistId
@@ -29,6 +30,7 @@ namespace ProyectoTecWeb.Repositories
             await _db.PlaylistSongs.AddAsync(playlistSong);
             await _db.SaveChangesAsync();
         }
+
 
         public async Task Delete(Playlist playlist)
         {

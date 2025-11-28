@@ -9,7 +9,7 @@ namespace ProyectoTecWeb.Repositories
         Task Add(Playlist playlist);
         Task Update(Playlist playlist);
         Task Delete(Playlist playlist);
-        Task AddSongToPlaylist(PlaylistSong playlistSong);
+        Task AddSongToPlaylist(Guid playlistId,Guid songId);
         Task RemoveSongFromPlaylist(Guid playlistId, Guid songId);
     }
 }
