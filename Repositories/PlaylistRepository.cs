@@ -21,17 +21,11 @@ namespace ProyectoTecWeb.Repositories
 
         public async Task AddSongToPlaylist(Guid playlistId, Guid songId)
         {
-            bool exists = await _db.PlaylistSongs
-                .AnyAsync(ps => ps.PlaylistId == playlistId && ps.SongId == songId);
+            var exists = await _db.PlaylistSongs
+                 .AnyAsync(ps => ps.PlaylistId == playlistSong.PlaylistId
+                     && ps.SongId == playlistSong.SongId);
 
-            if (exists)
-                return;
-
-            var playlistSong = new PlaylistSong
-            {
-                PlaylistId = playlistId,
-                SongId = songId
-            };
+            if (exists) return;
 
             await _db.PlaylistSongs.AddAsync(playlistSong);
             await _db.SaveChangesAsync();
@@ -47,15 +41,9 @@ namespace ProyectoTecWeb.Repositories
         public async Task<IEnumerable<Playlist>> GetAll()
         {
             return await _db.Playlists
-                .Include(p => p.PlaylistSongs)  // ✅ CAMBIADO: Songs -> PlaylistSongs
-                    .ThenInclude(ps => ps.Song) // ✅ AGREGADO: Incluir la canción relacionada
+                .Include(p => p.PlaylistSongs)  //  Songs -> PlaylistSongs
+                    .ThenInclude(ps => ps.Song) //  Incluir la canción relacionada
                 .ToListAsync();
-        }
-
-        public async Task<Playlist?> GetOne(Guid id)
-        {
-            return await _db.Playlists
-                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<Playlist?> GetOneWithSongs(Guid id)

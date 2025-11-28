@@ -30,7 +30,7 @@ namespace ProyectoTecWeb.Data
                 .HasOne(ps => ps.Song)
                 .WithMany(s => s.PlaylistSongs)
                 .HasForeignKey(ps => ps.SongId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             // 1:1 Song - Statistics (esto estaba bien)
             modelBuilder.Entity<Song>()
@@ -47,5 +47,4 @@ namespace ProyectoTecWeb.Data
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }
-    }
-
+}
