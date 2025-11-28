@@ -4,24 +4,25 @@ namespace ProyectoTecWeb.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public async  Task AddAsync(User user)
+        private readonly AppDbContext _ctx;
+        public UserRepository(AppDbContext ctx) { _ctx = ctx; }
+
+        public Task<User?> GetByEmailAddress(string email) =>
+            _ctx.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        public Task<User?> GetByRefreshToken(string refreshToken) =>
+            _ctx.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+
+        public async Task AddAsync(User user)
         {
-            throw new NotImplementedException();
+            _ctx.Users.Add(user);
+            await _ctx.SaveChangesAsync();
         }
 
-        public Task<User?> GetByEmailAddress(string email)
+        public async Task UpdateAsync(User user)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<User?> GetByRefreshToken(string refreshToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAsync(User user)
-        {
-            throw new NotImplementedException();
+            _ctx.Users.Update(user);
+            await _ctx.SaveChangesAsync();
         }
     }
 }
