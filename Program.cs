@@ -5,25 +5,22 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using ProyectoTecWeb.Data;
-using ProyectoTecWeb.Repositories; 
-using ProyectoTecWeb.Services;     
+using ProyectoTecWeb.Repositories; // Asegúrate de tener los repositorios aquí
+using ProyectoTecWeb.Services;     // Asegúrate de tener los servicios aquí
 using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Variables de entorno (si quieres usar .env para JWT o PORT)
+// Carga variables de entorno
 Env.Load();
 
-// 2. Configuración de puerto (Railway/Docker/local)
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// 3. Controladores y endpoints
+// Controladores y Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
-// 4. Swagger con JWT
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Music API", Version = "v1" });
@@ -47,7 +44,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// 5. CORS
+// CORS
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("AllowAll", p => p
@@ -56,18 +53,6 @@ builder.Services.AddCors(opt =>
         .AllowAnyMethod());
 });
 
-// 6. Base de datos: usar SIEMPRE la connection string del appsettings
-// OJO: la clave debe coincidir con "ConnectionStrings": { "Default": "..." }
-var connectionString = builder.Configuration.GetConnectionString("Default")
-    ?? "Host=localhost;Port=5432;Database=musicdb;Username=musicuser;Password=supersecretpassword123";
-
-builder.Services.AddDbContext<AppDbContext>(opt =>
-    opt.UseNpgsql(connectionString));
-
-// 7. JWT (puedes mezclar appsettings o variables de entorno)
-var jwtKey = builder.Configuration["Jwt:Key"]
-    ?? Environment.GetEnvironmentVariable("JWT_KEY")
-    ?? "EstaEsUnaClaveSuperSecretaYLoSuficientementeLargaParaHmacSha256!";
 // Configuración DB
 var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (!string.IsNullOrEmpty(connectionString))
@@ -101,6 +86,10 @@ else
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connectionString));
 
+// Configuración JWT
+var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "ClaveSecretaSuperSeguraParaDesarrollo123!";
+var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "MiApi";
+var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "MiCliente";
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services
@@ -121,19 +110,15 @@ builder.Services
         };
     });
 
-// 8. Políticas
-builder.Services.AddAuthorization(opt =>
+// Políticas
+builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
 });
 
-// 9. Registro de repositorios y servicios
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-// --- INYECCIÓN DE DEPENDENCIAS ---
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IAuthService, AuthService>();       
+// --- INYECCIÓN DE DEPENDENCIAS (CORREGIDO) ---
+builder.Services.AddScoped<IUserRepository, UserRepository>(); // <--- FALTABA ESTO
+builder.Services.AddScoped<IAuthService, AuthService>();       // <--- FALTABA ESTO
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<ISongService, SongService>();
@@ -141,7 +126,9 @@ builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 
 var app = builder.Build();
 
-// 11. Pipeline HTTP
+// --- MIDDLEWARES ---
+// Si creaste el ExceptionMiddleware para los logs, actívalo aquí:
+// app.UseMiddleware<ExceptionMiddleware>(); 
 
 if (app.Environment.IsDevelopment())
 {

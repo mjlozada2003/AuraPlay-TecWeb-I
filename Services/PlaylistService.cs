@@ -27,7 +27,7 @@ namespace ProyectoTecWeb.Services
 
         public async Task DeletePlaylist(Guid id)
         {
-            var playlist = await _repo.GetOne(id);
+            var playlist = await _repo.GetOneWithSongs(id);
             if (playlist == null) throw new Exception("Playlist not found.");
 
             await _repo.Delete(playlist);
@@ -47,7 +47,7 @@ namespace ProyectoTecWeb.Services
 
         public async Task<Playlist> UpdatePlaylist(UpdatePlaylistDto dto, Guid id)
         {
-            var playlist = await _repo.GetOne(id);
+            var playlist = await _repo.GetOneWithSongs(id);
             if (playlist == null) throw new Exception("Playlist not found.");
 
             if (!string.IsNullOrEmpty(dto.Name))
