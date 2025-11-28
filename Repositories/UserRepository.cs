@@ -1,4 +1,6 @@
-﻿using ProyectoTecWeb.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using ProyectoTecWeb.Data;
+using ProyectoTecWeb.Models;
 
 namespace ProyectoTecWeb.Repositories
 {
