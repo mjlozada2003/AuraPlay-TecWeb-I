@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoTecWeb.Models;
 using ProyectoTecWeb.Models.DTOS;
@@ -37,7 +38,18 @@ namespace ProyectoTecWeb.Controllers
         public async Task<IActionResult> CreatePlaylist([FromBody] CreatePlaylistDto dto)
         {
             if (!ModelState.IsValid) return ValidationProblem(ModelState);
-            var playlist = await _service.CreatePlaylist(dto);
+
+            var userIdStr =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value   
+                ?? User.FindFirst("sub")?.Value;                   
+
+            if (string.IsNullOrEmpty(userIdStr))
+                return Unauthorized("No se pudo obtener el usuario del token");
+
+            var userId = Guid.Parse(userIdStr);
+
+            var playlist = await _service.CreatePlaylist(dto, userId);
+
             return CreatedAtAction(nameof(GetOne), new { id = playlist.Id }, playlist);
         }
 
