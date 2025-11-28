@@ -12,8 +12,6 @@ namespace ProyectoTecWeb.Models
 
         [StringLength(200)]
         public string Description { get; set; } = string.Empty;
-        public Guid UserId { get; set; }
-        public User User { get; set; } = null!;
 
         // RELACIÓN 1:N (Dueño de la playlist)
         public Guid UserId { get; set; }
