@@ -80,7 +80,6 @@ Cabecera requerida para endpoints protegidos:
 ```http
 Authorization: Bearer <tu_token_jwt_aqui>
 
-----
 
 ## 🌐 5. Documentación de Endpoints
 
