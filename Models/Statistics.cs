@@ -1,4 +1,6 @@
-﻿namespace ProyectoTecWeb.Models
+﻿using System.Text.Json.Serialization;
+
+namespace ProyectoTecWeb.Models
 {
     public class Statistics
     {
@@ -10,6 +12,7 @@
 
         // Clave foránea y navegación
         public Guid SongId { get; set; }
+        [JsonIgnore]
         public Song Song { get; set; } = null!;
         
     }
