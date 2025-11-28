@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "51df5a7f-dd4b-4352-a206-2791e9cf0185",
+		"_postman_id": "937ed55a-0924-40ff-ba71-4e266feb9d67",
 		"name": "Music API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "47458953"
@@ -30,7 +30,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"email\": \"QG7NVrXN@auIQFdFMpdtjwhUeUYirFxSl.gmou\",\n  \"password\": \"string\",\n  \"username\": \"string\",\n  \"role\": \"string\"\n}",
+													"raw": "{\n  \"email\": \"RbJ@atezUkacxRGudWDuyblRMgUZCGlh.zlby\",\n  \"password\": \"string\",\n  \"username\": \"string\",\n  \"role\": \"string\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -69,7 +69,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"email\": \"QG7NVrXN@auIQFdFMpdtjwhUeUYirFxSl.gmou\",\n  \"password\": \"string\",\n  \"username\": \"string\",\n  \"role\": \"string\"\n}",
+															"raw": "{\n  \"email\": \"RbJ@atezUkacxRGudWDuyblRMgUZCGlh.zlby\",\n  \"password\": \"string\",\n  \"username\": \"string\",\n  \"role\": \"string\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -116,7 +116,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"email\": \"le77qQ3t@QlotiHnomXcOqKPUEmuihPdcaAArbYLFM.ok\",\n  \"password\": \"string\"\n}",
+													"raw": "{\n  \"email\": \"jtRzMy@kxNfmmSOQywpbPZJzrjKmgHqlh.vjqj\",\n  \"password\": \"string\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -155,7 +155,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"email\": \"le77qQ3t@QlotiHnomXcOqKPUEmuihPdcaAArbYLFM.ok\",\n  \"password\": \"string\"\n}",
+															"raw": "{\n  \"email\": \"jtRzMy@kxNfmmSOQywpbPZJzrjKmgHqlh.vjqj\",\n  \"password\": \"string\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -298,7 +298,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"songId\": \"1c90911d-a016-243a-0076-1e765cde1abf\"\n}",
+													"raw": "{\n  \"songId\": \"de51e96e-2555-a150-08c4-738730130767\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -320,7 +320,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -343,7 +343,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"songId\": \"1c90911d-a016-243a-0076-1e765cde1abf\"\n}",
+															"raw": "{\n  \"songId\": \"de51e96e-2555-a150-08c4-738730130767\"\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -352,9 +352,11 @@
 															}
 														},
 														"url": {
-															"raw": "//api/Playlist/:id/songs",
+															"raw": "{{baseUrl}}/api/Playlist/:id/songs",
+															"host": [
+																"{{baseUrl}}"
+															],
 															"path": [
-																"",
 																"api",
 																"Playlist",
 																":id",
@@ -363,7 +365,7 @@
 															"variable": [
 																{
 																	"key": "id",
-																	"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+																	"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 																}
 															]
 														}
@@ -397,7 +399,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+													"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 												}
 											]
 										}
@@ -427,7 +429,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -453,7 +455,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\"\n}",
+											"raw": "{\n  \"name\": \"str\",\n  \"description\": \"string\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -474,7 +476,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+													"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 												}
 											]
 										}
@@ -497,7 +499,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\"\n}",
+													"raw": "{\n  \"name\": \"str\",\n  \"description\": \"string\"\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -518,7 +520,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -550,7 +552,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+													"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 												}
 											]
 										}
@@ -580,7 +582,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -625,11 +627,11 @@
 															"variable": [
 																{
 																	"key": "playlistId",
-																	"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+																	"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 																},
 																{
 																	"key": "songId",
-																	"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+																	"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 																}
 															]
 														}
@@ -661,11 +663,11 @@
 																	"variable": [
 																		{
 																			"key": "playlistId",
-																			"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+																			"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 																		},
 																		{
 																			"key": "songId",
-																			"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+																			"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 																		}
 																	]
 																}
@@ -833,7 +835,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"likes\": 2039,\n  \"reproductions\": 8678,\n  \"rating\": 1263.8119398292358\n}",
+													"raw": "{\n  \"likes\": 8930,\n  \"reproductions\": 8771,\n  \"rating\": 7644.16465895424\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -855,7 +857,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -878,7 +880,7 @@
 														],
 														"body": {
 															"mode": "raw",
-															"raw": "{\n  \"likes\": 2039,\n  \"reproductions\": 8678,\n  \"rating\": 1263.8119398292358\n}",
+															"raw": "{\n  \"likes\": 8930,\n  \"reproductions\": 8771,\n  \"rating\": 7644.16465895424\n}",
 															"options": {
 																"raw": {
 																	"headerFamily": "json",
@@ -900,7 +902,7 @@
 															"variable": [
 																{
 																	"key": "id",
-																	"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+																	"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 																}
 															]
 														}
@@ -934,7 +936,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+													"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 												}
 											]
 										}
@@ -964,7 +966,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -990,7 +992,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"duration\": 2759.716143633013\n}",
+											"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"duration\": 5282.704272055814\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -1011,7 +1013,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+													"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 												}
 											]
 										}
@@ -1034,7 +1036,7 @@
 												],
 												"body": {
 													"mode": "raw",
-													"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"duration\": 2759.716143633013\n}",
+													"raw": "{\n  \"name\": \"string\",\n  \"description\": \"string\",\n  \"duration\": 5282.704272055814\n}",
 													"options": {
 														"raw": {
 															"headerFamily": "json",
@@ -1055,7 +1057,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -1087,7 +1089,7 @@
 											"variable": [
 												{
 													"key": "id",
-													"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+													"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 												}
 											]
 										}
@@ -1117,7 +1119,7 @@
 													"variable": [
 														{
 															"key": "id",
-															"value": "0d4993ac-bfb8-be5b-5d6d-7b7538ed9c94"
+															"value": "85fcb53a-a907-5675-1b86-0336b7ad480d"
 														}
 													]
 												}
@@ -1193,7 +1195,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"description\": \"string\",\n  \"duration\": 23.20394867165648,\n  \"name\": \"string\"\n}",
+									"raw": "{\n  \"description\": \"string\",\n  \"duration\": 36.32905989433082,\n  \"name\": \"string\"\n}",
 									"options": {
 										"raw": {
 											"headerFamily": "json",
@@ -1230,7 +1232,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"description\": \"string\",\n  \"duration\": 23.20394867165648,\n  \"name\": \"string\"\n}",
+											"raw": "{\n  \"description\": \"string\",\n  \"duration\": 36.32905989433082,\n  \"name\": \"string\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
@@ -1321,7 +1323,7 @@
 								}
 							],
 							"cookie": [],
-							"body": "[\n  {\n    \"date\": \"1954-02-20\",\n    \"temperatureC\": 4793,\n    \"temperatureF\": 6050,\n    \"summary\": \"string\"\n  },\n  {\n    \"date\": \"1978-10-22\",\n    \"temperatureC\": 8053,\n    \"temperatureF\": 1308,\n    \"summary\": \"string\"\n  }\n]"
+							"body": "[\n  {\n    \"date\": \"1948-02-23\",\n    \"temperatureC\": 5717,\n    \"temperatureF\": 8529,\n    \"summary\": \"string\"\n  },\n  {\n    \"date\": \"1953-05-04\",\n    \"temperatureC\": 9651,\n    \"temperatureF\": 6903,\n    \"summary\": \"string\"\n  }\n]"
 						}
 					]
 				}

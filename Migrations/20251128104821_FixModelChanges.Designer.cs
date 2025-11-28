@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ProyectoTecWeb.Data;
@@ -11,9 +12,11 @@ using ProyectoTecWeb.Data;
 namespace ProyectoTecWeb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251128104821_FixModelChanges")]
+    partial class FixModelChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,7 +48,7 @@ namespace ProyectoTecWeb.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Playlists", (string)null);
+                    b.ToTable("Playlists");
                 });
 
             modelBuilder.Entity("ProyectoTecWeb.Models.PlaylistSong", b =>
@@ -63,7 +66,7 @@ namespace ProyectoTecWeb.Migrations
 
                     b.HasIndex("SongId");
 
-                    b.ToTable("PlaylistSongs", (string)null);
+                    b.ToTable("PlaylistSongs");
                 });
 
             modelBuilder.Entity("ProyectoTecWeb.Models.Song", b =>
@@ -87,7 +90,7 @@ namespace ProyectoTecWeb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Songs", (string)null);
+                    b.ToTable("Songs");
                 });
 
             modelBuilder.Entity("ProyectoTecWeb.Models.Statistics", b =>
@@ -116,7 +119,7 @@ namespace ProyectoTecWeb.Migrations
                     b.HasIndex("SongId")
                         .IsUnique();
 
-                    b.ToTable("Statistics", (string)null);
+                    b.ToTable("Statistics");
                 });
 
             modelBuilder.Entity("ProyectoTecWeb.Models.User", b =>
@@ -156,7 +159,7 @@ namespace ProyectoTecWeb.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("ProyectoTecWeb.Models.Playlist", b =>
