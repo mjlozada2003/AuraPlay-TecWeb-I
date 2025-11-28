@@ -10,7 +10,9 @@ namespace ProyectoTecWeb.Data
         }
 
         public DbSet<Song> Songs => Set<Song>();
+
         public DbSet<Playlist> Playlists => Set<Playlist>();
+        public DbSet<User> Users => Set<User>();
         public DbSet<PlaylistSong> PlaylistSongs => Set<PlaylistSong>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
