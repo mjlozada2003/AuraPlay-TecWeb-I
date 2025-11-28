@@ -5,22 +5,23 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using ProyectoTecWeb.Data;
-using ProyectoTecWeb.Repositories; // Asegúrate de tener los repositorios aquí
-using ProyectoTecWeb.Services;     // Asegúrate de tener los servicios aquí
+using ProyectoTecWeb.Repositories;
+using ProyectoTecWeb.Services;
 using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Carga variables de entorno
+// 1. Cargar variables de entorno (.env)
 Env.Load();
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// Controladores y Swagger
+// 3. Controladores y Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Music API", Version = "v1" });
@@ -44,7 +45,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// CORS
+// 4. CORS
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("AllowAll", p => p
@@ -53,43 +54,60 @@ builder.Services.AddCors(opt =>
         .AllowAnyMethod());
 });
 
-// Configuración DB
-var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL");
-if (!string.IsNullOrEmpty(connectionString))
+
+// 5. CONFIGURACIÓN DB (UNA sola vez)
+
+// Valor base: appsettings.json -> "ConnectionStrings:Default"
+var connectionString = builder.Configuration.GetConnectionString("Default");
+
+// Si hay DATABASE_URL (Railway, Render, etc.), la parseamos y la usamos
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+if (!string.IsNullOrEmpty(databaseUrl))
 {
-    // Lógica para Railway (DATABASE_URL)
-    var uri = new Uri(connectionString);
+    var uri = new Uri(databaseUrl);
     var userInfo = uri.UserInfo.Split(':', 2);
     var user = Uri.UnescapeDataString(userInfo[0]);
     var pass = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
-    var builderCs = new NpgsqlConnectionStringBuilder
+
+    var csBuilder = new NpgsqlConnectionStringBuilder
     {
         Host = uri.Host,
         Port = uri.Port,
         Username = user,
         Password = pass,
         Database = uri.AbsolutePath.Trim('/'),
-        SslMode = SslMode.Disable // Cambiar a Require si Railway lo exige en producción
+        SslMode = SslMode.Disable // pon Require si tu hosting lo exige
     };
-    connectionString = builderCs.ConnectionString;
+    connectionString = csBuilder.ConnectionString;
 }
 else
 {
-    // Lógica Local (Docker variables)
+    // Fallback a variables tipo Docker/local
     var dbName = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "musicdb";
     var dbUser = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "musicuser";
     var dbPass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "supersecret";
     var dbHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
 
-    connectionString = $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
+    connectionString ??= $"Host={dbHost};Database={dbName};Username={dbUser};Password={dbPass}";
 }
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseNpgsql(connectionString));
 
-// Configuración JWT
-var jwtKey = Environment.GetEnvironmentVariable("JWT_KEY") ?? "ClaveSecretaSuperSeguraParaDesarrollo123!";
-var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "MiApi";
-var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "MiCliente";
+
+// 6. JWT
+
+var jwtKey = builder.Configuration["Jwt:Key"]
+    ?? Environment.GetEnvironmentVariable("JWT_KEY")
+    ?? "EstaEsUnaClaveSuperSecretaYLoSuficientementeLargaParaHmacSha256!";
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"]
+    ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
+    ?? "AuraPlayAPI";
+
+var jwtAudience = builder.Configuration["Jwt:Audience"]
+    ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
+    ?? "AuraPlayClient";
+
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services
@@ -110,15 +128,15 @@ builder.Services
         };
     });
 
-// Políticas
+// 7. Autorización
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", p => p.RequireRole("Admin"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
 });
 
-// --- INYECCIÓN DE DEPENDENCIAS (CORREGIDO) ---
-builder.Services.AddScoped<IUserRepository, UserRepository>(); // <--- FALTABA ESTO
-builder.Services.AddScoped<IAuthService, AuthService>();       // <--- FALTABA ESTO
+// 8. Inyección de dependencias (SIN repetir)
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISongRepository, SongRepository>();
 builder.Services.AddScoped<IPlaylistRepository, PlaylistRepository>();
 builder.Services.AddScoped<ISongService, SongService>();
@@ -126,10 +144,7 @@ builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 
 var app = builder.Build();
 
-// --- MIDDLEWARES ---
-// Si creaste el ExceptionMiddleware para los logs, actívalo aquí:
-// app.UseMiddleware<ExceptionMiddleware>(); 
-
+// 9. Pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -137,8 +152,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

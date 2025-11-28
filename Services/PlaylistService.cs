@@ -12,18 +12,15 @@ namespace ProyectoTecWeb.Services
             _repo = repo;
         }
 
-        public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
+    public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
+    {
+        var playlist = new Playlist
         {
-            var playlist = new Playlist
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                Description = dto.Description,
-                UserId = userId
-            };
-            await _repo.Add(playlist);
-            return playlist;
-        }
+            Id = Guid.NewGuid(),
+            Name = dto.Name,
+            Description = dto.Description,
+            UserId = userId          
+        };
 
         public async Task DeletePlaylist(Guid id)
         {
@@ -56,9 +53,24 @@ namespace ProyectoTecWeb.Services
             if (!string.IsNullOrEmpty(dto.Description))
                 playlist.Description = dto.Description;
 
-            await _repo.Update(playlist);
-            return playlist;
-        }
+        await _repo.Update(playlist);
+        return playlist;
+    }
+
+
+
+
+
+public async Task RemoveSongFromPlaylist(Guid playlistId, Guid songId)
+    {
+        await _repo.RemoveSongFromPlaylist(playlistId, songId);
+    }
+
+    public async Task AddSongToPlaylist(Guid playlistId, IEnumerable<Guid> songIds)
+    {
+        var playlist = await _repo.GetOne(playlistId);
+        if (playlist == null)
+            throw new Exception("Playlist not found");
 
         public async Task AddSongToPlaylist(Guid playlistId, AddSongToPlaylistDto dto)
         {
@@ -69,11 +81,6 @@ namespace ProyectoTecWeb.Services
                 AddedAt = DateTime.UtcNow
             };
             await _repo.AddSongToPlaylist(playlistSong);
-        }
-
-        public async Task RemoveSongFromPlaylist(Guid playlistId, Guid songId)
-        {
-            await _repo.RemoveSongFromPlaylist(playlistId, songId);
         }
     }
 }
