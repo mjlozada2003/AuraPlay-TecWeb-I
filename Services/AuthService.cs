@@ -1,12 +1,13 @@
-﻿using ProyectoTecWeb.Models.DTOS;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using ProyectoTecWeb.Models;
+using ProyectoTecWeb.Models.DTOS;
 using ProyectoTecWeb.Repositories;
+using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ProyectoTecWeb.Services
 {
@@ -14,20 +15,30 @@ namespace ProyectoTecWeb.Services
     {
         private readonly IUserRepository _users;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUserRepository users, IConfiguration configuration)
+        public AuthService(IUserRepository users, IConfiguration configuration, ILogger<AuthService> logger)
         {
             _users = users;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<(bool ok, LoginResponseDto? response)> LoginAsync(LoginDto dto)
         {
             var user = await _users.GetByEmailAddress(dto.Email);
-            if (user == null) return (false, null);
+            if (user == null)
+            {
+                _logger.LogWarning("⚠️ Intento de login fallido: Email no existe ({Email})", dto.Email);
+                return (false, null);
+            }
 
             var ok = BCrypt.Net.BCrypt.Verify(dto.PasswordHash, user.PasswordHash);
-            if (!ok) return (false, null);
+            if (!ok)
+            {
+                _logger.LogWarning("⚠️ Intento de login fallido: Contraseña incorrecta para ({Email})", dto.Email);
+                return (false, null);
+            }
 
             // Generar par access/refresh
             var (accessToken, expiresIn, jti) = GenerateJwtToken(user);
@@ -40,6 +51,8 @@ namespace ProyectoTecWeb.Services
             user.RefreshTokenRevokedAt = null;
             user.CurrentJwtId = jti;
             await _users.UpdateAsync(user);
+
+            _logger.LogInformation("✅ Usuario logueado exitosamente: {Email} ({Id})", user.Email, user.Id);
 
             var resp = new LoginResponseDto
             {
@@ -56,6 +69,13 @@ namespace ProyectoTecWeb.Services
 
         public async Task<string> RegisterAsync(RegisterDto dto)
         {
+            var existing = await _users.GetByEmailAddress(dto.Email);
+            if (existing != null)
+            {
+                _logger.LogWarning("⚠️ Intento de registro duplicado: {Email}", dto.Email);
+                throw new Exception("El email ya está registrado");
+            }
+
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             var user = new User
             {
@@ -65,6 +85,7 @@ namespace ProyectoTecWeb.Services
                 Role = dto.Role
             };
             await _users.AddAsync(user);
+            _logger.LogInformation("👤 Nuevo usuario registrado: {Email} con rol {Role}", dto.Email, dto.Role);
             return user.Id.ToString();
         }
 
@@ -72,13 +93,18 @@ namespace ProyectoTecWeb.Services
         {
             // Buscar usuario que tenga ese refresh token (simple)
             var user = await _users.GetByRefreshToken(dto.RefreshToken);
-            if (user == null) return (false, null);
+            if (user == null)
+            {
+                _logger.LogWarning("⚠️ Refresh fallido: Token no encontrado");
+                return (false, null);
+            }
 
             // Validaciones de refresh
-            if (user.RefreshToken != dto.RefreshToken) return (false, null);
-            if (user.RefreshTokenRevokedAt.HasValue) return (false, null);
-            if (!user.RefreshTokenExpiresAt.HasValue || user.RefreshTokenExpiresAt.Value < DateTime.UtcNow) return (false, null);
-
+            if (user.RefreshToken != dto.RefreshToken || user.RefreshTokenRevokedAt.HasValue || user.RefreshTokenExpiresAt < DateTime.UtcNow)
+            {
+                _logger.LogWarning("⚠️ Refresh fallido: Token inválido o expirado para usuario {Id}", user.Id);
+                return (false, null);
+            }
             // Rotación: generar nuevo access + refresh y revocar el anterior
             var (accessToken, expiresIn, jti) = GenerateJwtToken(user);
             var newRefresh = GenerateSecureRefreshToken();
@@ -90,6 +116,7 @@ namespace ProyectoTecWeb.Services
             user.CurrentJwtId = jti;
             await _users.UpdateAsync(user);
 
+            _logger.LogInformation("🔄 Token refrescado exitosamente para usuario {Id}", user.Id);
             var resp = new LoginResponseDto
             {
                 User = new UserDto { Id = user.Id, Username = user.Username, Email = user.Email },
