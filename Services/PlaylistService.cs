@@ -10,18 +10,15 @@ public class PlaylistService : IPlaylistService
         _repo = repo;
     }
 
-        public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
+    public async Task<Playlist> CreatePlaylist(CreatePlaylistDto dto, Guid userId)
+    {
+        var playlist = new Playlist
         {
-            var playlist = new Playlist
-            {
-                Id = Guid.NewGuid(),
-                Name = dto.Name,
-                Description = dto.Description,
-                UserId = userId
-            };
-            await _repo.Add(playlist);
-            return playlist;
-        }
+            Id = Guid.NewGuid(),
+            Name = dto.Name,
+            Description = dto.Description,
+            UserId = userId          
+        };
 
         await _repo.Add(playlist);
         return playlist;
@@ -61,7 +58,17 @@ public class PlaylistService : IPlaylistService
         await _repo.Update(playlist);
         return playlist;
     }
-    public async Task AddSongsToPlaylist(Guid playlistId, IEnumerable<Guid> songIds)
+
+
+
+
+
+public async Task RemoveSongFromPlaylist(Guid playlistId, Guid songId)
+    {
+        await _repo.RemoveSongFromPlaylist(playlistId, songId);
+    }
+
+    public async Task AddSongToPlaylist(Guid playlistId, IEnumerable<Guid> songIds)
     {
         var playlist = await _repo.GetOne(playlistId);
         if (playlist == null)
@@ -71,11 +78,5 @@ public class PlaylistService : IPlaylistService
         {
             await _repo.AddSongToPlaylist(playlistId, songId);
         }
-    }
-
-
-    public async Task RemoveSongFromPlaylist(Guid playlistId, Guid songId)
-    {
-        await _repo.RemoveSongFromPlaylist(playlistId, songId);
     }
 }

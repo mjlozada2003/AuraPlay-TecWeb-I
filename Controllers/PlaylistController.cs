@@ -75,7 +75,7 @@ namespace ProyectoTecWeb.Controllers
             if (dto == null || dto.Songs == null || !dto.Songs.Any())
                 return BadRequest("Debe enviar al menos un id de canción.");
 
-            await _service.AddSongsToPlaylist(id, dto.Songs);
+            await _service.AddSongToPlaylist(id, dto.Songs);
 
             return NoContent(); // o Ok(...)
         }

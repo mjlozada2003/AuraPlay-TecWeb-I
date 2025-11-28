@@ -18,7 +18,6 @@ namespace ProyectoTecWeb.Repositories
             await _db.SaveChangesAsync();
         }
 
-
         public async Task AddSongToPlaylist(Guid playlistId, Guid songId)
         {
             bool exists = await _db.PlaylistSongs
@@ -36,6 +35,7 @@ namespace ProyectoTecWeb.Repositories
             await _db.PlaylistSongs.AddAsync(playlistSong);
             await _db.SaveChangesAsync();
         }
+
 
 
         public async Task Delete(Playlist playlist)
