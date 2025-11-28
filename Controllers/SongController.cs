@@ -6,7 +6,8 @@ using ProyectoTecWeb.Services;
 
 namespace ProyectoTecWeb.Controllers
 {
-    [ApiController] 
+
+    [ApiController]
     [Route("api/[controller]")]
     public class SongController : ControllerBase
     {
