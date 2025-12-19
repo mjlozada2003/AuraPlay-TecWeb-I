@@ -17,8 +17,15 @@ namespace ProyectoTecWeb.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            var id = await _service.RegisterAsync(dto);
-            return CreatedAtAction(nameof(Register), new { id }, null);
+            try
+            {
+                var id = await _service.RegisterAsync(dto);
+                return CreatedAtAction(nameof(Register), new { id }, null);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); // Devuelve error 400
+            }
         }
 
         [HttpPost("login")]

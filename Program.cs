@@ -76,7 +76,7 @@ if (!string.IsNullOrEmpty(databaseUrl))
         Username = user,
         Password = pass,
         Database = uri.AbsolutePath.Trim('/'),
-        SslMode = SslMode.Disable // pon Require si tu hosting lo exige
+        SslMode = Convert.ToBoolean(builder.Configuration["UseSSL"] ?? "false") ? SslMode.Require : SslMode.Disable
     };
     connectionString = csBuilder.ConnectionString;
 }
@@ -102,11 +102,11 @@ var jwtKey = builder.Configuration["Jwt:Key"]
 
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]
     ?? Environment.GetEnvironmentVariable("JWT_ISSUER")
-    ?? "AuraPlayAPI";
+    ?? "MusicApi";
 
 var jwtAudience = builder.Configuration["Jwt:Audience"]
     ?? Environment.GetEnvironmentVariable("JWT_AUDIENCE")
-    ?? "AuraPlayClient";
+    ?? "MusicClient";
 
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
@@ -144,12 +144,9 @@ builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 
 var app = builder.Build();
 
-// 9. Pipeline HTTP
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
 
 app.UseCors("AllowAll");
 
